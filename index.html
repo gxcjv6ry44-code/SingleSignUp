@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Appointment Form Test</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; padding: 20px; background:#f6f7f9; }
+    .card { max-width: 820px; margin: 0 auto; background: white; padding: 18px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    .grid { display:grid; grid-template-columns: 1fr; gap: 12px; }
+    .pair { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { font-weight: 700; font-size: 13px; }
+    input, select { padding: 10px; border:1px solid #d8dde6; border-radius: 10px; }
+    .checks { padding: 12px; background:#fafbfc; border:1px solid #e6e9ef; border-radius: 12px; display:grid; gap: 8px; }
+    .row { display:flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    button { padding: 10px 14px; border-radius: 12px; border: 0; font-weight: 800; cursor:pointer; }
+    button[type="submit"] { background:#2563eb; color:white; }
+    .secondary { background:#e5e7eb; }
+    .go { background:#16a34a; color:white; }
+    .error { color:#b91c1c; font-size: 12px; min-height: 16px; }
+    .hint { font-size: 12px; color:#5b6472; }
+    pre { margin-top: 12px; padding: 12px; background:#0b1020; color:#e5e7eb; border-radius: 12px; overflow:auto; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .pair { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Appointment Form (Local Test)</h2>
+    <div class="hint">Submit prints JSON below. (Optional Make webhook supported.)</div>
+
+    <form id="apptForm" novalidate>
+      <div class="grid" style="margin-top:12px;">
+        <div>
+          <label for="fullName">Full name *</label><br/>
+          <input id="fullName" maxlength="120" style="width:100%;" />
+          <div class="error" id="errName"></div>
+        </div>
+
+        <div>
+          <label for="phone">Phone *</label><br/>
+          <input id="phone" placeholder="801-555-1234" />
+          <div class="error" id="errPhone"></div>
+        </div>
+
+        <div>
+          <label for="email">Email *</label><br/>
+          <input id="email" type="email" maxlength="120" placeholder="you@example.com" style="width:100%;" />
+          <div class="error" id="errEmail"></div>
+        </div>
+
+        <div class="pair">
+          <div>
+            <label for="stake">Stake *</label><br/>
+            <select id="stake">
+              <option value="">Select a stake…</option>
+            </select>
+            <div class="error" id="errStake"></div>
+          </div>
+
+          <div>
+            <label for="ward">Ward *</label><br/>
+            <select id="ward" disabled>
+              <option value="">Choose a stake first…</option>
+            </select>
+            <div class="error" id="errWard"></div>
+          </div>
+        </div>
+
+        <div>
+          <label for="date">Date *</label><br/>
+          <input id="date" type="date" />
+          <div class="hint" id="dateHint">Choose any future date.</div>
+          <div class="error" id="errDate"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label>Appointment time *</label>
+        <div class="checks" role="radiogroup" aria-label="Appointment time">
+          <label><input type="radio" name="timeSlot" value="AM Volunteer" /> AM Volunteer (8:30–10:30 AM)</label>
+          <label><input type="radio" name="timeSlot" value="PM Volunteer" /> PM Volunteer (5:00–7:00 PM)</label>
+          <label><input type="radio" name="timeSlot" value="Youth Night" /> Youth Night (Wednesdays 6:30–8:00 PM)</label>
+          <div class="error" id="errTime"></div>
+        </div>
+      </div>
+</div>
+
+      <div class="row">
+        <button type="submit">Submit (local)</button>
+        <button type="button" class="secondary" id="resetBtn">Reset</button>
+        <button type="button" class="go" id="orchardBtn">Go to North Ogden Orchard</button>
+        <div class="hint" id="successMsg" style="align-self:center; font-weight:700;"></div>
+        <div class="error" id="errSubmit" style="align-self:center;"></div>
+      </div>
+    </form>
+
+    <pre id="output">{}</pre>
+  </div>
+
+  <!-- IMPORTANT: script is at the bottom so elements exist before JS runs -->
+  <script>
+    /***********************
+     * CONFIG
+     ***********************/
+      const MAKE_WEBHOOK_URL = "PASTE_THE_SAME_MAKE_WEBHOOK_URL_AS_YOUR_MULTI-LINE_FORM_HERE";
+      const SEND_TO_MAKE = true; // set false to test locally without sending
+
+
+    const STAKE_WARDS = {
+      BenLomond: ["Ward 1", "Ward 2", "Ward 3"],
+      PlainCity: ["North", "Central", "South"],
+      FarrWest: ["A", "B", "C", "D"],
+      FarrWestPoplar: ["Poplar 1", "Poplar 2"],
+      MountLewis: ["Red", "Blue", "Green"],
+      MoundFort: ["East", "West"],
+      OgdenWest: ["1", "2", "3", "4"],
+      EastRidge: ["Hills", "Valley", "Lake"],
+      NorthGate: ["Alpha", "Beta"],
+      SouthPoint: ["1", "2"]
+    };
+
+    const form = document.getElementById("apptForm");
+    const out = document.getElementById("output");
+    const successMsg = document.getElementById("successMsg");
+
+    const fullNameEl = document.getElementById("fullName");
+    const phoneEl = document.getElementById("phone");
+    const emailEl = document.getElementById("email");
+
+    const stakeEl = document.getElementById("stake");
+    const wardEl = document.getElementById("ward");
+
+    const dateEl = document.getElementById("date");
+    const dateHint = document.getElementById("dateHint");
+    const resetBtn = document.getElementById("resetBtn");
+    const orchardBtn = document.getElementById("orchardBtn");
+
+
+    function setError(id, msg) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = msg || "";
+    }
+    function clearErrors() {
+      ["errName","errPhone","errEmail","errStake","errWard","errDate","errTime","errSubmit"].forEach(id => setError(id, ""));
+      if (successMsg) successMsg.textContent = "";
+    }
+
+    // Populate Stake dropdown
+    Object.keys(STAKE_WARDS).forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s;
+      opt.textContent = s;
+      stakeEl.appendChild(opt);
+    });
+
+    // Stake -> Ward
+    stakeEl.addEventListener("change", () => {
+      wardEl.innerHTML = "";
+      if (!stakeEl.value) {
+        wardEl.disabled = true;
+        wardEl.innerHTML = "<option value=''>Choose a stake first…</option>";
+        return;
+      }
+      wardEl.disabled = false;
+      wardEl.innerHTML = "<option value=''>Select a ward…</option>";
+      STAKE_WARDS[stakeEl.value].forEach(w => {
+        const opt = document.createElement("option");
+        opt.value = w;
+        opt.textContent = w;
+        wardEl.appendChild(opt);
+      });
+    });
+
+    orchardBtn.addEventListener("click", () => {
+      window.location.href = "https://northogdenorchard.net";
+    });
+
+    function normalizePhone(raw) {
+      const digits = (raw || "").replace(/\D/g, "");
+      if (digits.length === 10) return digits;
+      if (digits.length === 11 && digits.startsWith("1")) return digits.slice(1);
+      return null;
+    }
+    function getSelectedTime() {
+      const checked = document.querySelector('input[name="timeSlot"]:checked');
+      return checked ? checked.value : null;
+    }
+    function parseLocalDate(yyyyMmDd) {
+      if (!yyyyMmDd) return null;
+      const [y,m,d] = yyyyMmDd.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+    function isWednesday(d) { return d && d.getDay() === 3; }
+    function toYyyyMmDd(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${dd}`;
+    }
+    function nextWednesday(fromDate) {
+      const d = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+      const diff = (3 - d.getDay() + 7) % 7;
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    function applyYouthNightRulesIfNeeded() {
+      const timeSlot = getSelectedTime();
+      const isYouth = timeSlot === "Youth Night";
+      dateHint.textContent = isYouth
+        ? "Youth Night is Wednesdays only (6:30–8:00)."
+        : "Choose any future date.";
+
+      if (!isYouth) return;
+
+      const current = parseLocalDate(dateEl.value);
+      const base = current || new Date();
+      const nextWed = nextWednesday(base);
+      if (!current || !isWednesday(current)) {
+        dateEl.value = toYyyyMmDd(nextWed);
+      }
+    }
+
+    document.querySelectorAll('input[name="timeSlot"]').forEach(r => {
+      r.addEventListener("change", applyYouthNightRulesIfNeeded);
+    });
+
+    dateEl.addEventListener("change", () => {
+      if (getSelectedTime() === "Youth Night") {
+        const d = parseLocalDate(dateEl.value);
+        if (d && !isWednesday(d)) {
+          dateEl.value = toYyyyMmDd(nextWednesday(d));
+        }
+      }
+    });
+
+    // no past dates
+    dateEl.min = toYyyyMmDd(new Date());
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const fullName = fullNameEl.value.trim();
+      const phoneRaw = phoneEl.value.trim();
+      const email = emailEl.value.trim().toLowerCase();
+
+      const stake = stakeEl.value;
+      const ward = wardEl.value;
+      const dateStr = dateEl.value;
+
+      const timeSlot = getSelectedTime();
+      let ok = true;
+
+      if (!fullName) { setError("errName", "Name is required."); ok = false; }
+
+      const phone = normalizePhone(phoneRaw);
+      if (!phone) { setError("errPhone", "Enter a valid US phone number (10 digits)."); ok = false; }
+
+      if (!email) { setError("errEmail", "Email is required."); ok = false; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("errEmail", "Enter a valid email address."); ok = false; }
+
+      if (!stake) { setError("errStake", "Please select a stake."); ok = false; }
+      if (!ward) { setError("errWard", "Please select a ward."); ok = false; }
+      if (!dateStr) { setError("errDate", "Please choose a date."); ok = false; }
+
+      if (!timeSlot) { setError("errTime", "Please select a time slot."); ok = false; }
+
+      if (timeSlot === "Youth Night" && dateStr) {
+        const d = parseLocalDate(dateStr);
+        if (!isWednesday(d)) {
+          setError("errDate", "Youth Night is Wednesdays only. Please choose a Wednesday.");
+          ok = false;
+        }
+      }
+      if (!ok) return;
+
+      const timeRange =
+        timeSlot === "AM Volunteer" ? "8:00–10:00" :
+        timeSlot === "PM Volunteer" ? "5:00–7:00" :
+        "6:30–8:00";
+
+      // EXACT header fields
+      const payload = {
+        fullName,
+        phone,
+        email,
+        stake,
+        ward,
+        date: dateStr,
+        timeSlot,
+        timeRange};
+
+      out.textContent = JSON.stringify(payload, null, 2);
+
+      const canSend = SEND_TO_MAKE && MAKE_WEBHOOK_URL.trim().length > 0;
+      if (canSend) {
+        try {
+          const resp = await fetch(MAKE_WEBHOOK_URL.trim(), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok) throw new Error(`Make error ${resp.status}`);
+          successMsg.textContent = "Submitted ✓ (saved to Google Sheet)";
+        } catch (err) {
+          console.error(err);
+          setError("errSubmit", "Send to Make failed. Check webhook URL and Make \"Run once\".");
+        }
+      } else {
+        successMsg.textContent = "Submitted locally ✓ (see JSON below)";
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      form.reset();
+      clearErrors();
+      out.textContent = "{}";
+      wardEl.disabled = true;
+      wardEl.innerHTML = "<option value=''>Choose a stake first…</option>";
+      dateHint.textContent = "Choose any future date.";
+    });
+  </script>
+</body>
+</html>
