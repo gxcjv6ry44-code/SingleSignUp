@@ -26,13 +26,13 @@
 <body>
   <div class="card">
     <h2>Appointment Form</h2>
-    <div class="hint">Submit prints JSON below. (Optional Make webhook supported.)</div>
+    <div class="hint">Submit prints JSON below.</div>
 
     <form id="apptForm" novalidate>
       <div class="grid" style="margin-top:12px;">
         <div>
           <label for="fullName">Full name *</label><br/>
-          <input id="fullName" maxlength="120" style="width:100%;" />
+          <input id="fullName" maxlength="120" style="width:95%;" />
           <div class="error" id="errName"></div>
         </div>
 
@@ -44,7 +44,7 @@
 
         <div>
           <label for="email">Email *</label><br/>
-          <input id="email" type="email" maxlength="120" placeholder="you@example.com" style="width:100%;" />
+          <input id="email" type="email" maxlength="120" placeholder="you@example.com" style="width:95%;" />
           <div class="error" id="errEmail"></div>
         </div>
 
@@ -150,7 +150,7 @@
     const dateHint = document.getElementById("dateHint");
     const resetBtn = document.getElementById("resetBtn");
     const orchardBtn = document.getElementById("orchardBtn");
-
+    const optIn = document.querySelector('#optInCheckbox').checked;
 
     function setError(id, msg) {
       const el = document.getElementById(id);
@@ -305,7 +305,7 @@
         ward,
         date: dateStr,
         timeSlot,
-        timeRange};
+        timeRange.optIn//true/false};
 
       out.textContent = JSON.stringify(payload, null, 2);
 
