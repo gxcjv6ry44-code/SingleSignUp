@@ -150,7 +150,7 @@
     const dateHint = document.getElementById("dateHint");
     const resetBtn = document.getElementById("resetBtn");
     const orchardBtn = document.getElementById("orchardBtn");
-    const optIn = document.querySelector('#optInCheckbox').checked;
+    const optIn = document.querySelector('#smsOptIn').checked;
 
     function setError(id, msg) {
       const el = document.getElementById(id);
@@ -305,7 +305,8 @@
         ward,
         date: dateStr,
         timeSlot,
-        timeRange.optIn//true/false};
+        timeRange,
+        smsOptIn//true/false};
 
       out.textContent = JSON.stringify(payload, null, 2);
 
