@@ -296,21 +296,19 @@
         timeSlot === "PM Volunteer" ? "5:00–7:00" :
         "6:30–8:00";
 
-      const smsOptIn = smsOptInEl ? smsOptInEl.checked : false;
+     const smsOptIn = smsOptInEl ? smsOptInEl.checked : false;
 
-      
-      // EXACT header fields
-      const payload = {
-        fullName,
-        phone,
-        email,
-        stake,
-        ward,
-        date: dateStr,
-        timeSlot,
-        timeRange,
-        smsOptIn: smsOptIn
-      };
+const payload = {
+  fullName,
+  phone,
+  email,
+  stake,
+  ward,
+  date: dateStr,
+  timeSlot,
+  timeRange,
+  smsOptIn: smsOptIn
+};
 
       out.textContent = JSON.stringify(payload, null, 2);
 
