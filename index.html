@@ -150,7 +150,7 @@
     const dateHint = document.getElementById("dateHint");
     const resetBtn = document.getElementById("resetBtn");
     const orchardBtn = document.getElementById("orchardBtn");
-    const smsOptIn = document.getElementById("smsOptin").checked;
+    const smsOptInEl = document.getElementById("smsOptIn"); // matches HTML id
 
     function setError(id, msg) {
       const el = document.getElementById(id);
@@ -296,6 +296,9 @@
         timeSlot === "PM Volunteer" ? "5:00–7:00" :
         "6:30–8:00";
 
+      const smsOptIn = smsOptInEl ? smsOptInEl.checked : false;
+
+      
       // EXACT header fields
       const payload = {
         fullName,
