@@ -473,92 +473,96 @@ const STAKE_WARDS = {
       window.location.href = "https://northogdenorchard.net";
     });
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearErrors();
+   form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearErrors();
 
-      const phoneRaw = document.querySelector('[name="phone"]')?.value || "";
-      const phoneDigits = phoneRaw.replace(/\D/g, ""); // digits only
-      const year = new Date().getFullYear();
-      document.getElementById("dedupeKey").value = `${phoneDigits}_${year}`;
+  // helpers for dedupeKey formatting
+  const normText = (s) => (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
+  const normPhoneDigits = (s) => (s || "").toString().replace(/\D/g, "");
 
-      const fullName = fullNameEl.value.trim();
-      const phoneRaw = phoneEl.value.trim();
-      const email = emailEl.value.trim().toLowerCase();
+  const fullName = fullNameEl.value.trim();
+  const phoneRaw = phoneEl.value.trim();
+  const email = emailEl.value.trim().toLowerCase();
 
-      const stake = stakeEl.value;
-      const ward = wardEl.value;
-      const dateStr = dateEl.value;
+  const stake = stakeEl.value;
+  const ward = wardEl.value;
+  const dateStr = dateEl.value;
 
-      const timeSlot = getSelectedTime();
-      let ok = true;
+  const timeSlot = getSelectedTime();
+  let ok = true;
 
-      if (!fullName) { setError("errName", "Name is required."); ok = false; }
+  if (!fullName) { setError("errName", "Name is required."); ok = false; }
 
-      const phone = normalizePhone(phoneRaw);
-      if (!phone) { setError("errPhone", "Enter a valid US phone number (10 digits)."); ok = false; }
+  const phone = normalizePhone(phoneRaw); // normalized to 10 digits (strips leading 1 if present)
+  if (!phone) { setError("errPhone", "Enter a valid US phone number (10 digits)."); ok = false; }
 
-      if (!email) { setError("errEmail", "Email is required."); ok = false; }
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("errEmail", "Enter a valid email address."); ok = false; }
+  if (!email) { setError("errEmail", "Email is required."); ok = false; }
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("errEmail", "Enter a valid email address."); ok = false; }
 
-      if (!stake) { setError("errStake", "Please select a stake."); ok = false; }
-      if (!ward) { setError("errWard", "Please select a ward."); ok = false; }
-      if (!dateStr) { setError("errDate", "Please choose a date."); ok = false; }
+  if (!stake) { setError("errStake", "Please select a stake."); ok = false; }
+  if (!ward) { setError("errWard", "Please select a ward."); ok = false; }
+  if (!dateStr) { setError("errDate", "Please choose a date."); ok = false; }
 
-      if (!timeSlot) { setError("errTime", "Please select a time slot."); ok = false; }
+  if (!timeSlot) { setError("errTime", "Please select a time slot."); ok = false; }
 
-      if (timeSlot === "Youth Night" && dateStr) {
-        const d = parseLocalDate(dateStr);
-        if (!isWednesday(d)) {
-          setError("errDate", "Youth Night is Wednesdays only. Please choose a Wednesday.");
-          ok = false;
-        }
-      }
+  if (timeSlot === "Youth Night" && dateStr) {
+    const d = parseLocalDate(dateStr);
+    if (!isWednesday(d)) {
+      setError("errDate", "Youth Night is Wednesdays only. Please choose a Wednesday.");
+      ok = false;
+    }
+  }
 
-      if (!ok) return;
+  if (!ok) return;
 
-      // You can change these later as needed
-      const timeRange =
-        timeSlot === "AM Volunteer" ? "8:30–10:30 AM" :
-        timeSlot === "PM Volunteer" ? "5:00–7:00 PM" :
-        "Wednesdays 6:30–8:00 PM";
+  // Build dedupeKey: stake|ward|fullname|phone|date|timeSlot
+  // Use the SAME phone you will send (10 digits), and normalized lowercase text.
+  const dedupeKey = `${normText(stake)}|${normText(ward)}|${normText(fullName)}|${phone}|${dateStr}|${normText(timeSlot)}`;
+  document.getElementById("dedupeKey").value = dedupeKey;
 
-      // IMPORTANT: include opt-in checkbox value in JSON payload
-      const smsOptIn = smsOptInEl ? smsOptInEl.checked : false;
+  // You can change these later as needed
+  const timeRange =
+    timeSlot === "AM Volunteer" ? "8:30–10:30 AM" :
+    timeSlot === "PM Volunteer" ? "5:00–7:00 PM" :
+    "Wednesdays 6:30–8:00 PM";
 
-      const payload = {
-        fullName,
-        phone,
-        email,
-        stake,
-        ward,
-        date: dateStr,
-        timeSlot,
-        timeRange,
-        smsOptIn
-      };
+  const smsOptIn = smsOptInEl ? smsOptInEl.checked : false;
 
-      out.textContent = JSON.stringify(payload, null, 2);
+  // JSON payload sent to Make (dedupeKey included)
+  const payload = {
+    fullName,
+    phone,        // normalized 10-digit phone
+    email,
+    stake,
+    ward,
+    date: dateStr,
+    timeSlot,
+    timeRange,
+    smsOptIn,
+    dedupeKey     // <-- added
+  };
 
-      const canSend = SEND_TO_MAKE && MAKE_WEBHOOK_URL.trim().length > 0 && !MAKE_WEBHOOK_URL.includes("PASTE_");
-      if (canSend) {
-        try {
-          const resp = await fetch(MAKE_WEBHOOK_URL.trim(), {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          if (!resp.ok) throw new Error(`Make error ${resp.status}`);
-          successMsg.textContent = "Submitted ✓";
-        } catch (err) {
-          console.error(err);
-          setError("errSubmit", "Send to Make failed. Check webhook URL and Make \"Run once\".");
-        }
-      } else {
-        successMsg.textContent = "Submitted ✓ (not sent — webhook URL not set)";
-      }
-    });
+  out.textContent = JSON.stringify(payload, null, 2);
 
+  const canSend = SEND_TO_MAKE && MAKE_WEBHOOK_URL.trim().length > 0 && !MAKE_WEBHOOK_URL.includes("PASTE_");
+  if (canSend) {
+    try {
+      const resp = await fetch(MAKE_WEBHOOK_URL.trim(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!resp.ok) throw new Error(`Make error ${resp.status}`);
+      successMsg.textContent = "Submitted ✓";
+    } catch (err) {
+      console.error(err);
+      setError("errSubmit", "Send to Make failed. Check webhook URL and Make \"Run once\".");
+    }
+  } else {
+    successMsg.textContent = "Submitted ✓ (not sent — webhook URL not set)";
+  }
+});
     resetBtn.addEventListener("click", () => {
       form.reset();
       clearErrors();
