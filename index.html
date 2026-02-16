@@ -174,7 +174,7 @@
       </div>
 
       <div class="row">
-        <button type="submit">Submit</button>
+       <button type="submit" id="submitBtn">Submit</button>
         <button type="button" class="secondary" id="resetBtn">Reset</button>
         <button type="button" class="go" id="orchardBtn">Go to North Ogden Orchard</button>
         <div class="hint" id="successMsg" style="align-self:center; font-weight:700;"></div>
@@ -344,6 +344,10 @@ const STAKE_WARDS = {
     const form = document.getElementById("signupForm");
     const out = document.getElementById("output");
     const successMsg = document.getElementById("successMsg");
+    const submitBtn = document.getElementById("submitBtn");
+    let isSubmitting = false;
+
+    
 
     const fullNameEl = document.getElementById("fullName");
     const phoneEl = document.getElementById("phone");
@@ -476,6 +480,13 @@ const STAKE_WARDS = {
    form.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearErrors();
+     // Prevent double submit
+  if (isSubmitting) return;
+  isSubmitting = true;
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+}
 
   // helpers for dedupeKey formatting
   const normText = (s) => (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
@@ -558,7 +569,13 @@ const STAKE_WARDS = {
     } catch (err) {
       console.error(err);
       setError("errSubmit", "Send to Make failed. Check webhook URL and Make \"Run once\".");
-    }
+    }finally {
+  isSubmitting = false;
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit";
+  }
+}
   } else {
     successMsg.textContent = "Submitted ✓ (not sent — webhook URL not set)";
   }
