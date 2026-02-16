@@ -86,6 +86,7 @@
     <div class="hint">This form submits to Make and prints the JSON below.</div>
 
     <form id="signupForm" novalidate>
+      <input type="hidden" name="dedupeKey" id="dedupeKey" value="">
       <div class="grid" style="margin-top:12px;">
         <div>
           <label for="fullName">Full name *</label><br/>
@@ -475,6 +476,11 @@ const STAKE_WARDS = {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       clearErrors();
+
+      const phoneRaw = document.querySelector('[name="phone"]')?.value || "";
+      const phoneDigits = phoneRaw.replace(/\D/g, ""); // digits only
+      const year = new Date().getFullYear();
+      document.getElementById("dedupeKey").value = `${phoneDigits}_${year}`;
 
       const fullName = fullNameEl.value.trim();
       const phoneRaw = phoneEl.value.trim();
