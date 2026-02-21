@@ -180,6 +180,21 @@
         <div class="hint" id="successMsg" style="align-self:center; font-weight:700;"></div>
         <div class="error" id="errSubmit" style="align-self:center;"></div>
       </div>
+      <div id="nextSteps" style="margin-top:14px; display:none;">
+  <div class="hint" style="font-weight:700; margin-bottom:8px;">
+    Next step: Please complete the safety training.
+  </div>
+  <a
+    id="safetyLink"
+    class="go"
+    href="https://northogdenorchard.net/orchardsafety"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="display:inline-block; text-decoration:none; padding:10px 14px; border-radius:12px;"
+  >
+    Go to Safety Training
+  </a>
+</div>
     </form>
 
     <pre id="output">{}</pre>
@@ -362,6 +377,7 @@ const STAKE_WARDS = {
     const resetBtn = document.getElementById("resetBtn");
     const orchardBtn = document.getElementById("orchardBtn");
     const smsOptInEl = document.getElementById("smsOptIn");
+    const nextStepsEl = document.getElementById("nextSteps");
 
     function setError(id, msg) {
       const el = document.getElementById(id);
@@ -566,10 +582,11 @@ const STAKE_WARDS = {
       });
       if (!resp.ok) throw new Error(`Make error ${resp.status}`);
       successMsg.textContent = "Submitted ✓";
-    } catch (err) {
+    } .catch(err => {
       console.error(err);
       setError("errSubmit", "Send to Make failed. Check webhook URL and Make \"Run once\".");
-    }finally {
+      if (nextStepsEl) nextStepsEl.style.display = "none";
+    });
   isSubmitting = false;
   if (submitBtn) {
     submitBtn.disabled = false;
@@ -577,7 +594,8 @@ const STAKE_WARDS = {
   }
 }
   } else {
-    successMsg.textContent = "Submitted ✓ (not sent — webhook URL not set)";
+    successMsg.textContent = "Thank you. Your signup has been received ✓";
+if (nextStepsEl) nextStepsEl.style.display = "block";";
   }
 });
     resetBtn.addEventListener("click", () => {
@@ -587,6 +605,7 @@ const STAKE_WARDS = {
       wardEl.disabled = true;
       wardEl.innerHTML = "<option value=''>Choose a stake first…</option>";
       dateHint.textContent = "Choose any future date.";
+      if (nextStepsEl) nextStepsEl.style.display = "none";
     });
   </script>
 </body>
