@@ -175,7 +175,9 @@
       <div class="row">
        <button type="submit" id="submitBtn">Submit</button>
         <button type="reset" class="secondary">Reset</button>
+        <!--
         <button type="button" class="go" id="orchardBtn">Go to North Ogden Orchard</button>
+        -->
         <div class="hint" id="successMsg" style="align-self:center; font-weight:700;"></div>
         <div class="error" id="errSubmit" style="align-self:center;"></div>
       </div>
@@ -619,9 +621,9 @@ Willard: [
     // No past dates
     dateEl.min = toYyyyMmDd(new Date());
 
-    orchardBtn.addEventListener("click", () => {
-      window.location.href = "https://northogdenorchard.net";
-    });
+//    orchardBtn.addEventListener("click", () => {
+//    window.location.href = "https://northogdenorchard.net";
+//    });
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
