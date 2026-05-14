@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Single User Sign Up</title>
+  <title>North Ogden Orchard — Sign Up</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; padding: 20px; background:#E5E3DC; }
     .card { max-width: 820px; margin: 0 auto; background: #E5E3DC; padding: 18px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
@@ -15,13 +15,13 @@
     input[type="email"],
     input[type="tel"],
     input[type="date"],
-   select {
-    padding: 10px;
-    border: 1px solid #d8dde6;
-    border-radius: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    } 
+    select {
+      padding: 10px;
+      border: 1px solid #d8dde6;
+      border-radius: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
     .checks { padding: 12px; background:#fafbfc; border:1px solid #e6e9ef; border-radius: 12px; display:grid; gap: 8px; }
     .row { display:flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
     button { padding: 10px 14px; border-radius: 12px; border: 0; font-weight: 800; cursor:pointer; }
@@ -33,59 +33,53 @@
     pre { margin-top: 12px; padding: 12px; background:#0b1020; color:#e5e7eb; border-radius: 12px; overflow:auto; }
     @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } }
     a { color: #2563eb; }
-   
 
-/* Keep inputs aligned nicely */
-.checks input[type="radio"],
-.checks input[type="checkbox"] {
- width: auto;
-  padding: 0;
-  border: 0;
-}
-/* Only style the appointment-time options (do NOT affect SMS consent block) */
-.time-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-weight: 500;   /* override the global bold label */
-  line-height: 1.35;
-}
-
-.time-option input[type="radio"] {
-  margin-top: 2px;
-  flex: 0 0 auto;
-}
-
-.time-option span {
-  display: inline-block;
-}
-/* Appointment time radio rows only */
-.time-row{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-}
-
-.time-row input[type="radio"]{
-  margin-top: 2px;
-}
-
-.time-text{
-  font-weight: 500;   /* overrides your global bold label */
-  font-size: 13px;
-  line-height: 1.35;
-  color: #111;        /* force visible text */
-  cursor: pointer;
-}
+    .checks input[type="radio"],
+    .checks input[type="checkbox"] {
+      width: auto;
+      padding: 0;
+      border: 0;
+    }
+    .time-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+    .time-option input[type="radio"] {
+      margin-top: 2px;
+      flex: 0 0 auto;
+    }
+    .time-option span {
+      display: inline-block;
+    }
+    .time-row {
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .time-row input[type="radio"] {
+      margin-top: 2px;
+    }
+    .time-text {
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #111;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
   <div class="card">
-    <h2>Sign Up</h2>
+    <div style="background:#2f6b2a; color:#fff; padding:14px 18px; border-radius:8px; margin-bottom:18px;">
+      <div style="font-size:12px; text-transform:uppercase; letter-spacing:.08em; opacity:.8;">Volunteer Sign Up</div>
+      <div style="font-size:20px; font-weight:700; margin-top:2px;">North Ogden Orchard</div>
+    </div>
 
     <form id="signupForm" novalidate>
-      <input type="hidden" name="dedupeKey" id="dedupeKey" value="">
       <div class="grid" style="margin-top:12px;">
         <div>
           <label for="fullName">Full name *</label><br/>
@@ -109,7 +103,7 @@
           <div>
             <label for="stake">Stake *</label><br/>
             <select id="stake" name="stake">
-              <option value="">Select a stake…</option>
+              <option value="">Loading…</option>
             </select>
             <div class="error" id="errStake"></div>
           </div>
@@ -131,35 +125,20 @@
         </div>
       </div>
 
-   <div style="margin-top:14px;">
-  <label>Appointment time *</label>
-
-  <div class="checks" role="radiogroup" aria-label="Appointment time">
-    <div class="time-row">
-      <input type="radio" id="tsAM" name="timeSlot" value="AM Volunteer" />
-      <label for="tsAM" class="time-text">AM Volunteer (8:30-10:30 AM)</label>
-    </div>
-
-    <div class="time-row">
-      <input type="radio" id="tsPM" name="timeSlot" value="PM Volunteer" />
-      <label for="tsPM" class="time-text">PM Volunteer (5:00-7:00 PM)</label>
-    </div>
-
-    <div class="time-row">
-      <input type="radio" id="tsYN" name="timeSlot" value="Youth Night" />
-      <label for="tsYN" class="time-text">Youth Night (Wednesdays 6:30-8:00 PM)</label>
-    </div>
-
-    <div class="error" id="errTime"></div>
-  </div>
-</div>
+      <div style="margin-top:14px;">
+        <label>Appointment time *</label>
+        <div class="checks" id="timeSlotsGroup" role="radiogroup" aria-label="Appointment time">
+          <div class="hint" id="timeSlotsLoading">Loading…</div>
+          <div class="error" id="errTime"></div>
+        </div>
+      </div>
 
       <div style="margin-top:14px;">
         <label>Text message consent (optional)</label>
         <div class="checks">
           <label style="font-weight: 500; line-height: 1.35;">
             <input id="smsOptIn" name="smsOptIn" type="checkbox" />
-            I agree to receive messages from North Ogden Orchard sent via an autodialer, and this agreement isn’t a condition of any purchase.
+            I agree to receive messages from North Ogden Orchard sent via an autodialer, and this agreement isn't a condition of any purchase.
             I also agree to the
             <a href="https://northogdenorchard.net/terms-conditions-and-privacy-policy" target="_blank" rel="noopener noreferrer">Terms of Service and Privacy Policy</a>.
             Approx. 4 msgs/month. Msg &amp; Data rates may apply.
@@ -173,354 +152,78 @@
       </div>
 
       <div class="row">
-       <button type="submit" id="submitBtn">Submit</button>
+        <button type="submit" id="submitBtn">Submit</button>
         <button type="reset" class="secondary">Reset</button>
-        <!--
-        <button type="button" class="go" id="orchardBtn">Go to North Ogden Orchard</button>
-        -->
         <div class="hint" id="successMsg" style="align-self:center; font-weight:700;"></div>
         <div class="error" id="errSubmit" style="align-self:center;"></div>
       </div>
-      <div id="nextSteps" style="margin-top:14px; display:none;">
-  <div class="hint" style="font-weight:700; margin-bottom:8px;">
-    Next step: Please complete the safety training if you have not done so this year.
-  </div>
-  <a
-    id="safetyLink"
-    class="go"
-    href="https://northogdenorchard.net/orchardsafety"
-    target="_blank"
-    rel="noopener noreferrer"
-    style="display:inline-block; text-decoration:none; padding:10px 14px; border-radius:12px;"
-  >
-    Go to Safety Training
-  </a>
-</div>
-    </form>
 
-  
+      <div id="nextSteps" style="margin-top:14px; display:none;">
+        <div class="hint" style="font-weight:700; margin-bottom:8px;">
+          Next step: Please complete the safety training if you have not done so this year.
+        </div>
+        <a
+          id="safetyLink"
+          class="go"
+          href="https://northogdenorchard.net/orchardsafety"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="display:inline-block; text-decoration:none; padding:10px 14px; border-radius:12px;"
+        >
+          Go to Safety Training
+        </a>
+      </div>
+    </form>
   </div>
 
   <script>
     /***********************
      * CONFIG
      ***********************/
-    const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/ph33pywmzpbdgqnbm0ywoencs1umyehn";
-    const SEND_TO_MAKE = true; // set false to test without sending
-
-    /***********************
-     * STAKE/WARD DATA
-     * (Replace with your real stakes/wards)
-     ***********************/
-const STAKE_WARDS = {
-
-BenLomond: ["1st", "4th", "5th", "8th", "9th", "10th", "11th", "12th"],
-
-BrighamCitySouth: [
-  "Brigham City 6th",
-  "Brigham City 10th",
-  "Brigham City 16th",
-  "Brigham City 19th",
-  "Brigham City 21st",
-  "Brigham City 25th",
-  "Lakeview",
-  "Maple Springs branches",
-  "Mountain View"
-],
-
-FarrWest: [
-  "Farr West 4th",
-  "Farr West 5th",
-  "Farr West 6th",
-  "Farr West 9th",
-  "Farr West 11th",
-  "Plain City 2nd",
-  "Plain City 7th",
-  "Plain City 8th",
-  "Plain City 10th"
-],
-
-FarrWestPoplar: [
-  "Cottonwood Creek",
-  "Farr West 1st",
-  "Farr West 2nd",
-  "Farr West 3rd",
-  "Farr West 7th",
-  "Farr West 8th",
-  "Poplar 1st",
-  "Poplar 2nd",
-  "Poplar 3rd",
-  "Poplar 4th"
-],
-
-Harrisville: [
-  "Harrisville 1st",
-  "Harrisville 2nd",
-  "Harrisville 3rd",
-  "Harrisville 6th",
-  "Harrisville 7th",
-  "Harrisville 8th",
-  "Harrisville 9th",
-  "Harrisville 10th"
-],
-
-Hooper: [
-  "Homestead",
-  "Hooper 1st",
-  "Hooper 2nd",
-  "Hooper 3rd",
-  "Hooper 4th",
-  "Lakeview",
-  "Park",
-  "Quail Meadows",
-  "Shannondoah"
-],
-
-HooperUtahPioneerTrail: [
-  "Eastgate",
-  "Freedom",
-  "Fremont",
-  "Hooper Landings",
-  "Muskrat Springs",
-  "Pioneer Trail",
-  "Wildwood"
-],
-
-HuntsvilleUtah: [
-  "Eden 1st",
-  "Eden 2nd",
-  "Huntsville 1st",
-  "Huntsville 2nd",
-  "Liberty 1st",
-  "Liberty 2nd",
-  "Middle Fork",
-  "Nordic Valley",
-  "North Fork",
-  "South Fork",
-  "Wolf Creek"
-],
-
-Kanesville: [
-  "Country View",
-  "Fair Grove",
-  "Foxglen Park",
-  "Pheasant Meadow",
-  "Prairie Crossing",
-  "Regal Country",
-  "Rocky Mountain"
-],
-
-NorthOgden: [
-  "North Ogden 1st",
-  "North Ogden 3rd",
-  "North Ogden 5th",
-  "North Ogden 7th",
-  "North Ogden 9th",
-  "North Ogden 16th",
-  "North Ogden 17th",
-  "North Ogden 21st"
-],
-
-NorthOgdenColdwater: [
-  "2nd",
-  "4th",
-  "6th",
-  "10th",
-  "12th",
-  "15th",
-  "19th",
-  "23rd",
-  "Mountain"
-],
-
-NorthOgdenEast: [
-  "North Ogden 8th",
-  "North Ogden 11th",
-  "North Ogden 13th",
-  "North Ogden 14th",
-  "North Ogden 20th",
-  "North Ogden 22nd",
-  "North Ogden 24th"
-],
-
-Ogden: [
-  "Bonneville Shoreline",
-  "Hidden Valley",
-  "Jefferson 2nd (Spanish)",
-  "Malans Peak",
-  "Monroe Branch (retirement)",
-  "Ogden 4th",
-  "Parkway"
-],
-
-OgdenEastRidge: [
-  "Evergreen Park",
-  "Farrs Fort",
-  "Foothill Trails",
-  "Liberty Cottages",
-  "Mill creek",
-  "Paradise Acres",
-  "Rolling Hills",
-  "Shoreline Ridge"
-],
-
-OgdenMoundFort: [
-  "Adobe mill",
-  "Heritage Park",
-  "Meadowbrook",
-  "Mill Creek",
-  "Ogden river",
-  "Pioneer"
-],
-
-OgdenUtahMountLewis: ["1st", "2nd", "3rd", "4th", "5th", "6th", "9th"],
-
-OgdenUtahWeberNorth: [
-  "Warren",
-  "West Warren",
-  "West Weber 1st",
-  "West Weber 2nd",
-  "West Weber 3rd",
-  "Wilson 1st",
-  "Wilson 6th",
-  "Wilson 7th"
-],
-
-OgdenWest: [
-  "Kanesville",
-  "Taylor 1st",
-  "Taylor 2nd",
-  "Taylor 3rd",
-  "Taylor 4th",
-  "Taylor 5th",
-  "Taylor 6th"
-],
-
-PerryUtah: [
-  "1st",
-  "2nd",
-  "4th",
-  "5th",
-  "6th",
-  "7th",
-  "8th",
-  "9th",
-  "10th",
-  "Box Elder YSA 1st"
-],
-
-PlainCity: [
-  "1st",
-  "3rd",
-  "4th",
-  "5th",
-  "6th",
-  "9th",
-  "Meadows",
-  "Riverside"
-],
-
-PleasantView: [
-  "Pleasant View 1st",
-  "Pleasant View 3rd",
-  "Pleasant View 4th",
-  "Pleasant View 6th",
-  "Pleasant View 11th",
-  "Pleasant View 12th",
-  "Pleasant View 14th",
-  "Pleasant View 18th"
-],
-
-PleasantViewOrchardSprings: [
-  "5th",
-  "7th",
-  "13th",
-  "15th",
-  "16th",
-  "17th",
-  "Misty Meadows"
-],
-
-PleasantViewSouth: [
-  "Harrisville 4th",
-  "Harrisville 5th",
-  "Hidden Meadows",
-  "Pleasant View 2nd",
-  "Pleasant View 8th",
-  "Pleasant View 9th",
-  "Pleasant View 10th"
-],
-
-WestHaven: [
-  "Country Meadows",
-  "Olive Bluff",
-  "Rosewood",
-  "Salt Point",
-  "Stone Creek",
-  "West Haven",
-  "White Rail"
-],
-
-WestHavenNorth: [
-  "Riverbend",
-  "Wilson 2nd",
-  "Wilson 3rd",
-  "Wilson 4th",
-  "Wilson 5th"
-],
-
-Willard: [
-  "Hargis Hill",
-  "Maguire Canyon",
-  "Perry 3rd",
-  "Three Mile Creek",
-  "Willard 1st",
-  "Willard 2nd",
-  "Willard 3rd",
-  "Willard 4th",
-  "Willard 5th",
-  "Willard 6th"
-]
-
-};
-
+    const SUPABASE_URL = "https://tfkdkekvtuqepjqsgjoc.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_JRFxF6A8mDcZX2D05CdoCQ_F6_rDbwh";
+    const SITE_ID = 1; // North Ogden Orchard — change per site
 
     /***********************
      * ELEMENTS
      ***********************/
-    const form = document.getElementById("signupForm");
-    
+    const form       = document.getElementById("signupForm");
     const successMsg = document.getElementById("successMsg");
-    const submitBtn = document.getElementById("submitBtn");
+    const submitBtn  = document.getElementById("submitBtn");
+    const fullNameEl = document.getElementById("fullName");
+    const phoneEl    = document.getElementById("phone");
+    const emailEl    = document.getElementById("email");
+    const stakeEl    = document.getElementById("stake");
+    const wardEl     = document.getElementById("ward");
+    const dateEl     = document.getElementById("date");
+    const dateHint   = document.getElementById("dateHint");
+    const smsOptInEl = document.getElementById("smsOptIn");
+    const nextStepsEl= document.getElementById("nextSteps");
+
     let isSubmitting = false;
 
-    
+    // Cache of all wards loaded from Supabase: [{ id, name, stake_id }]
+    let allWards = [];
 
-    const fullNameEl = document.getElementById("fullName");
-    const phoneEl = document.getElementById("phone");
-    const emailEl = document.getElementById("email");
+    // Cache of time slots: [{ id, label, time_range, day_of_week }]
+    // day_of_week: 0=Sun…6=Sat; null = any day
+    let siteTimeSlots = [];
 
-    const stakeEl = document.getElementById("stake");
-    const wardEl = document.getElementById("ward");
-
-    const dateEl = document.getElementById("date");
-    const dateHint = document.getElementById("dateHint");
-
-    const resetBtn = document.getElementById("resetBtn");
-    const orchardBtn = document.getElementById("orchardBtn");
-    const smsOptInEl = document.getElementById("smsOptIn");
-    const nextStepsEl = document.getElementById("nextSteps");
-
+    /***********************
+     * HELPERS
+     ***********************/
     function setError(id, msg) {
       const el = document.getElementById(id);
       if (el) el.textContent = msg || "";
     }
 
     function clearErrors() {
-      ["errName","errPhone","errEmail","errStake","errWard","errDate","errTime","errSubmit"].forEach(id => setError(id, ""));
-      if (successMsg) successMsg.textContent = "";
+      ["errName","errPhone","errEmail","errStake","errWard",
+       "errDate","errTime","errSubmit"].forEach(id => setError(id, ""));
+      successMsg.textContent = "";
     }
 
+    // Returns 10-digit string or null
     function normalizePhone(raw) {
       const digits = (raw || "").replace(/\D/g, "");
       if (digits.length === 10) return digits;
@@ -535,54 +238,152 @@ Willard: [
 
     function parseLocalDate(yyyyMmDd) {
       if (!yyyyMmDd) return null;
-      const [y,m,d] = yyyyMmDd.split("-").map(Number);
+      const [y, m, d] = yyyyMmDd.split("-").map(Number);
       return new Date(y, m - 1, d);
     }
 
     function isWednesday(d) { return d && d.getDay() === 3; }
 
     function toYyyyMmDd(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
+      const y  = d.getFullYear();
+      const m  = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
       return `${y}-${m}-${dd}`;
     }
 
     function nextWednesday(fromDate) {
-      const d = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
-      const diff = (3 - d.getDay() + 7) % 7;
+      const d    = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+      const diff = (3 - d.getDay() + 7) % 7 || 7; // if today is Wed, go to NEXT Wed
       d.setDate(d.getDate() + diff);
       return d;
     }
 
-    function applyYouthNightRulesIfNeeded() {
-      const timeSlot = getSelectedTime();
-      const isYouth = timeSlot === "Youth Night";
+    // Returns the day_of_week restriction for the currently selected slot, or null
+    function selectedSlotDayRestriction() {
+      const label = getSelectedTime();
+      if (!label) return null;
+      const slot = siteTimeSlots.find(s => s.label === label);
+      return slot ? slot.day_of_week : null;
+    }
 
-      dateHint.textContent = isYouth
-        ? "Youth Night is Wednesdays only."
-        : "Choose any future date.";
+    function nextMatchingDay(fromDate, targetDow) {
+      const d    = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+      const diff = (targetDow - d.getDay() + 7) % 7 || 7;
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
 
-      if (!isYouth) return;
-
+    function applyDayRestriction() {
+      const dow = selectedSlotDayRestriction();
+      if (dow === null || dow === undefined) {
+        dateHint.textContent = "Choose any future date.";
+        return;
+      }
+      const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      dateHint.textContent = `This slot is ${dayNames[dow]}s only.`;
       const current = parseLocalDate(dateEl.value);
-      const base = current || new Date();
-      const nextWed = nextWednesday(base);
-
-      if (!current || !isWednesday(current)) {
-        dateEl.value = toYyyyMmDd(nextWed);
+      const base    = current || new Date();
+      if (!current || current.getDay() !== dow) {
+        dateEl.value = toYyyyMmDd(nextMatchingDay(base, dow));
       }
     }
 
-    // Populate Stake dropdown
-    Object.keys(STAKE_WARDS).forEach(s => {
-      const opt = document.createElement("option");
-      opt.value = s;
-      opt.textContent = s;
-      stakeEl.appendChild(opt);
-    });
+    // Convert camelCase stake name → readable label
+    // e.g. "BenLomond" → "Ben Lomond", "NorthOgdenEast" → "North Ogden East"
+    function stakeLabel(name) {
+      return name.replace(/([A-Z])/g, " $1").trim();
+    }
 
-    // Stake -> Ward
+    /***********************
+     * SUPABASE FETCH
+     ***********************/
+    async function supaGet(path) {
+      const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+        headers: {
+          "apikey":        SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY,
+        }
+      });
+      if (!res.ok) throw new Error("Supabase error " + res.status);
+      return res.json();
+    }
+
+    async function supaInsert(table, payload) {
+      const res = await fetch(SUPABASE_URL + "/rest/v1/" + table, {
+        method:  "POST",
+        headers: {
+          "apikey":        SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY,
+          "Content-Type":  "application/json",
+          "Prefer":        "return=minimal",
+        },
+        body: JSON.stringify(payload),
+      });
+      return res; // caller inspects status
+    }
+
+    /***********************
+     * LOAD STAKES, WARDS, TIME SLOTS
+     ***********************/
+    async function loadStakesAndWards() {
+      try {
+        // Load stakes, wards, and time slots in parallel
+        const [stakes, wards, timeSlots] = await Promise.all([
+          supaGet("stakes?select=id,name&order=name"),
+          supaGet("wards?select=id,name,stake_id&order=name"),
+          supaGet(`time_slots?select=id,label,time_range,day_of_week,display_order&site_id=eq.${SITE_ID}&is_active=eq.true&order=display_order`),
+        ]);
+
+        allWards     = wards;
+        siteTimeSlots = timeSlots;
+
+        // Populate stake dropdown
+        stakeEl.innerHTML = '<option value="">Select a stake…</option>';
+        stakes.forEach(s => {
+          const opt        = document.createElement("option");
+          opt.value        = s.id;
+          opt.dataset.name = s.name;
+          opt.textContent  = stakeLabel(s.name);
+          stakeEl.appendChild(opt);
+        });
+
+        // Render time slot radio buttons dynamically
+        const group   = document.getElementById("timeSlotsGroup");
+        const loading = document.getElementById("timeSlotsLoading");
+        const errTime = document.getElementById("errTime");
+        if (loading) loading.remove();
+
+        timeSlots.forEach((slot, i) => {
+          const slotId = "ts_" + i;
+          const row    = document.createElement("div");
+          row.className = "time-row";
+
+          const radio   = document.createElement("input");
+          radio.type    = "radio";
+          radio.id      = slotId;
+          radio.name    = "timeSlot";
+          radio.value   = slot.label;
+          radio.addEventListener("change", applyDayRestriction);
+
+          const lbl     = document.createElement("label");
+          lbl.htmlFor   = slotId;
+          lbl.className = "time-text";
+          lbl.textContent = `${slot.label} (${slot.time_range})`;
+
+          row.appendChild(radio);
+          row.appendChild(lbl);
+          group.insertBefore(row, errTime);
+        });
+
+      } catch (err) {
+        console.error("Failed to load form data:", err);
+        stakeEl.innerHTML = '<option value="">Error loading — reload page</option>';
+        const loading = document.getElementById("timeSlotsLoading");
+        if (loading) loading.textContent = "Error loading time slots — reload page.";
+      }
+    }
+
+    // Populate ward dropdown when stake changes
     stakeEl.addEventListener("change", () => {
       wardEl.innerHTML = "";
       wardEl.value = "";
@@ -593,155 +394,146 @@ Willard: [
         return;
       }
 
+      const stakeId   = parseInt(stakeEl.value, 10);
+      const stakeWards = allWards.filter(w => w.stake_id === stakeId);
+
       wardEl.disabled = false;
       wardEl.innerHTML = "<option value=''>Select a ward…</option>";
-
-      (STAKE_WARDS[stakeEl.value] || []).forEach(w => {
+      stakeWards.forEach(w => {
         const opt = document.createElement("option");
-        opt.value = w;
-        opt.textContent = w;
+        opt.value       = w.id;
+        opt.textContent = w.name;
         wardEl.appendChild(opt);
       });
     });
 
-    // Youth Night rules
-    document.querySelectorAll('input[name="timeSlot"]').forEach(r => {
-      r.addEventListener("change", applyYouthNightRulesIfNeeded);
-    });
-
+    // If user manually picks a wrong day for a day-restricted slot, snap forward
     dateEl.addEventListener("change", () => {
-      if (getSelectedTime() === "Youth Night") {
-        const d = parseLocalDate(dateEl.value);
-        if (d && !isWednesday(d)) {
-          dateEl.value = toYyyyMmDd(nextWednesday(d));
-        }
+      const dow = selectedSlotDayRestriction();
+      if (dow === null || dow === undefined) return;
+      const d = parseLocalDate(dateEl.value);
+      if (d && d.getDay() !== dow) {
+        dateEl.value = toYyyyMmDd(nextMatchingDay(d, dow));
       }
     });
 
     // No past dates
     dateEl.min = toYyyyMmDd(new Date());
 
-//    orchardBtn.addEventListener("click", () => {
-//    window.location.href = "https://northogdenorchard.net";
-//    });
+    /***********************
+     * SUBMIT
+     ***********************/
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearErrors();
+      if (isSubmitting) return;
+      isSubmitting = true;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting…";
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  clearErrors();
+      try {
+        // ── Collect values ────────────────────────────────────
+        const fullName  = fullNameEl.value.trim();
+        const phoneRaw  = phoneEl.value.trim();
+        const email     = emailEl.value.trim().toLowerCase();
+        const stakeId   = stakeEl.value ? parseInt(stakeEl.value, 10) : null;
+        const wardId    = wardEl.value  ? parseInt(wardEl.value,  10) : null;
+        const dateStr   = dateEl.value;
+        const timeSlot  = getSelectedTime();
+        const smsOptIn  = smsOptInEl.checked;
 
-  // Prevent double submit
-  if (typeof isSubmitting !== "boolean") window.isSubmitting = false;
-  if (isSubmitting) return;
-  isSubmitting = true;
+        // ── Validate ──────────────────────────────────────────
+        let ok = true;
+        if (!fullName)  { setError("errName",  "Name is required."); ok = false; }
 
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting...";
-  }
+        const phone = normalizePhone(phoneRaw);
+        if (!phone)     { setError("errPhone", "Enter a valid US phone number (10 digits)."); ok = false; }
 
-  try {
-    // helpers for dedupeKey formatting
-    const normText = (s) => (s || "").toString().trim().toLowerCase().replace(/\s+/g, " ");
-    const normPhoneDigits = (s) => (s || "").toString().replace(/\D/g, "");
+        if (!email)                                             { setError("errEmail", "Email is required."); ok = false; }
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))   { setError("errEmail", "Enter a valid email address."); ok = false; }
 
-    const fullName = fullNameEl.value.trim();
-    const phoneRaw = phoneEl.value.trim();
-    const email = emailEl.value.trim().toLowerCase();
+        if (!stakeId)   { setError("errStake", "Please select a stake."); ok = false; }
+        if (!wardId)    { setError("errWard",  "Please select a ward."); ok = false; }
+        if (!dateStr)   { setError("errDate",  "Please choose a date."); ok = false; }
+        if (!timeSlot)  { setError("errTime",  "Please select a time slot."); ok = false; }
 
-    const stake = stakeEl.value;
-    const ward = wardEl.value;
-    const dateStr = dateEl.value;
+        // Validate day-of-week restriction for the selected slot
+        if (timeSlot && dateStr) {
+          const slot = siteTimeSlots.find(s => s.label === timeSlot);
+          if (slot && slot.day_of_week !== null && slot.day_of_week !== undefined) {
+            const d       = parseLocalDate(dateStr);
+            const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+            if (d && d.getDay() !== slot.day_of_week) {
+              setError("errDate",
+                `${slot.label} is ${dayNames[slot.day_of_week]}s only. Please choose a ${dayNames[slot.day_of_week]}.`);
+              ok = false;
+            }
+          }
+        }
 
-    const timeSlot = getSelectedTime();
-    let ok = true;
+        if (!ok) return;
 
-    if (!fullName) { setError("errName", "Name is required."); ok = false; }
+        // ── Normalize for dedup keys ──────────────────────────
+        const fullNameKey = fullName.toLowerCase().replace(/\s+/g, " ");
+        const phoneKey    = (phone || "").replace(/\D/g, "");
 
-    const phone = normalizePhone(phoneRaw); // normalized to 10 digits (strips leading 1 if present)
-    if (!phone) { setError("errPhone", "Enter a valid US phone number (10 digits)."); ok = false; }
+        // ── Build Supabase payload ────────────────────────────
+        const payload = {
+          site_id:       SITE_ID,
+          full_name:     fullName,
+          full_name_key: fullNameKey,
+          phone:         phone,
+          phone_key:     phoneKey,
+          email:         email,
+          stake_id:      stakeId,
+          ward_id:       wardId,
+          service_date:  dateStr,
+          time_slot:     timeSlot,
+          opt_in:        smsOptIn,
+          safety_status: "Missing",
+          submitted_on:  new Date().toISOString(),
+        };
 
-    if (!email) { setError("errEmail", "Email is required."); ok = false; }
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("errEmail", "Enter a valid email address."); ok = false; }
+        // ── Insert into Supabase ──────────────────────────────
+        const res = await supaInsert("volunteer_signups", payload);
 
-    if (!stake) { setError("errStake", "Please select a stake."); ok = false; }
-    if (!ward) { setError("errWard", "Please select a ward."); ok = false; }
-    if (!dateStr) { setError("errDate", "Please choose a date."); ok = false; }
+        if (res.status === 201) {
+          // Success
+          successMsg.textContent = "Thank you! Your signup has been received ✓";
+          nextStepsEl.style.display = "block";
+          form.reset();
+          wardEl.disabled = true;
+          wardEl.innerHTML = "<option value=''>Choose a stake first…</option>";
+          dateEl.min = toYyyyMmDd(new Date());
 
-    if (!timeSlot) { setError("errTime", "Please select a time slot."); ok = false; }
+        } else if (res.status === 409) {
+          // Duplicate — unique constraint hit
+          setError("errSubmit",
+            "It looks like you're already signed up for this date and time slot. " +
+            "If you think this is a mistake, please contact us.");
 
-    if (timeSlot === "Youth Night" && dateStr) {
-      const d = parseLocalDate(dateStr);
-      if (!isWednesday(d)) {
-        setError("errDate", "Youth Night is Wednesdays only. Please choose a Wednesday.");
-        ok = false;
+        } else {
+          // Unexpected error
+          const body = await res.text();
+          console.error("Supabase insert error:", res.status, body);
+          setError("errSubmit",
+            "Something went wrong (" + res.status + "). Please try again or contact us.");
+        }
+
+      } catch (err) {
+        console.error("Submit error:", err);
+        setError("errSubmit", "Network error. Check your connection and try again.");
+      } finally {
+        isSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
       }
-    }
+    });
 
-    if (!ok) {
-      // validation failed — re-enable submit UI and stop
-      return;
-    }
-
-    // Build dedupeKey: stake|ward|fullname|phone|date|timeSlot
-    const dedupeKey = `${normText(stake)}|${normText(ward)}|${normText(fullName)}|${phone}|${dateStr}|${normText(timeSlot)}`;
-    const dedupeEl = document.getElementById("dedupeKey");
-    if (dedupeEl) dedupeEl.value = dedupeKey;
-
-    // You can change these later as needed
-    const timeRange =
-      timeSlot === "AM Volunteer" ? "8:30–10:30 AM" :
-      timeSlot === "PM Volunteer" ? "5:30–7:30 PM" :
-      "Wednesdays 6:30–8:00 PM";
-
-    const smsOptIn = smsOptInEl ? smsOptInEl.checked : false;
-
-    // JSON payload sent to Make (dedupeKey included)
-    const payload = {
-      fullName,
-      phone,        // normalized 10-digit phone
-      email,
-      stake,
-      ward,
-      date: dateStr,
-      timeSlot,
-      timeRange,
-      smsOptIn,
-      dedupeKey     // <-- added
-    };
-
-   
-
-    const canSend = SEND_TO_MAKE && MAKE_WEBHOOK_URL.trim().length > 0 && !MAKE_WEBHOOK_URL.includes("PASTE_");
-    if (canSend) {
-      const resp = await fetch(MAKE_WEBHOOK_URL.trim(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!resp.ok) throw new Error(`Make error ${resp.status}`);
-
-      // success
-      successMsg.textContent = "Thank you. Your signup has been received ✓";
-      if (nextStepsEl) nextStepsEl.style.display = "block";
-      setError("errSubmit", ""); // clear any previous submit error
-    } else {
-      // Not sending to Make (testing mode)
-      successMsg.textContent = "Submitted ✓ (not sent — webhook URL not set)";
-      if (nextStepsEl) nextStepsEl.style.display = "block";
-    }
-  } catch (err) {
-    console.error(err);
-    setError("errSubmit", "Send to Make failed. Check webhook URL and Make \"Run once\".");
-    if (nextStepsEl) nextStepsEl.style.display = "none";
-  } finally {
-    // always re-enable the submit button and clear submitting flag
-    isSubmitting = false;
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit";
-    }
-  }
-});
+    /***********************
+     * INIT
+     ***********************/
+    loadStakesAndWards();
   </script>
 </body>
 </html>
